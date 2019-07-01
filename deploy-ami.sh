@@ -26,13 +26,18 @@ ami="$1"
 [ -n "$INSTANCE_ROLE" ] || die "missing env var INSTANCE_ROLE=[$INSTANCE_ROLE]"
 [ -n "$ASG" ] || die "missing env var ASG=[$ASG]"
 [ -n "$LINKED_ROLE_ARN" ] || die "missing env var LINKED_ROLE_ARN=[$LINKED_ROLE_ARN]"
+[ -n "$SECURITY_GROUP" ] || die "missing env var SECURITY_GROUP=[$SECURITY_GROUP]"
+[ -n "$SUBNETS" ] || die "missing env var SUBNETS=[$SUBNETS] subnet1,subnet2"
+[ -n "$ZONES" ] || die "missing env var ZONES=[$ZONES] 'sa-east-1a sa-east-1c'"
 
 lc_name="$LC_PREFIX"-$(date +%Y%m%d-%H%M%S)
-instance_type=m5.large
-security_group=sg-056a3ebb6b260fb42
+instance_type=t3.micro
+security_group="$SECURITY_GROUP"
 role="$INSTANCE_ROLE"
 asg="$ASG"
 asg_linked_role_arn="$LINKED_ROLE_ARN"
+subnets="$SUBNETS"
+zones="$ZONES"
 
 # shellcheck disable=SC2153
 [ -n "$INSTANCE_TYPE" ] && instance_type="$INSTANCE_TYPE"
@@ -56,10 +61,10 @@ aws autoscaling update-auto-scaling-group --auto-scaling-group-name "$asg" \
 	--max-size 2 \
 	--desired-capacity 2 \
 	--default-cooldown 60 \
-	--availability-zones sa-east-1a sa-east-1c \
+	--availability-zones "$zones" \
 	--health-check-type ELB \
 	--health-check-grace-period 60 \
-	--vpc-zone-identifier subnet-0afdc4419e152f0ae,subnet-0ae2009af5b92324a \
+	--vpc-zone-identifier "$subnets" \
 	--service-linked-role-arn "$asg_linked_role_arn"
 
 	
