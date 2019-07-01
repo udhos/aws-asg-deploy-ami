@@ -25,13 +25,14 @@ ami="$1"
 [ -n "$LC_PREFIX" ] || die "missing env var LC_PREFIX=[$LC_PREFIX]"
 [ -n "$INSTANCE_ROLE" ] || die "missing env var INSTANCE_ROLE=[$INSTANCE_ROLE]"
 [ -n "$ASG" ] || die "missing env var ASG=[$ASG]"
+[ -n "$LINKED_ROLE_ARN" ] || die "missing env var LINKED_ROLE_ARN=[$LINKED_ROLE_ARN]"
 
 lc_name="$LC_PREFIX"-$(date +%Y%m%d-%H%M%S)
 instance_type=m5.large
 security_group=sg-056a3ebb6b260fb42
 role="$INSTANCE_ROLE"
 asg="$ASG"
-asg_linked_role_arn=arn:aws:iam::584532452531:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling
+asg_linked_role_arn="$LINKED_ROLE_ARN"
 
 # shellcheck disable=SC2153
 [ -n "$INSTANCE_TYPE" ] && instance_type="$INSTANCE_TYPE"
